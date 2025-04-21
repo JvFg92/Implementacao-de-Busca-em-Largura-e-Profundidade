@@ -15,10 +15,10 @@ maze = [
     [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
     [1, 0, 1, 0, 1, 0, 0, 0, 1, 1],
     [1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],  # Corrigido: adicionado 0
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],  
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 3],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-]  
+]  #Para gerar um labirinto aleatório, defina maze como None e use a função generate_maze()
 
 #Configurações da janela para Pygame
 CELL_SIZE = 50
@@ -278,7 +278,7 @@ def run_textual_solvers():
 def setup():
     global screen, path, maze
     try:
-        if not maze: generate_maze() 
+        if(maze==None): maze=generate_maze() 
         pygame.init()
         screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
         pygame.display.set_caption("Labirinto")
