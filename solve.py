@@ -5,28 +5,27 @@ from collections import deque
 import heapq
 import random
 
-# Configurações do labirinto
+#Configurações do labirinto
 GRID_SIZE = 10
-maze = None  # Será gerado dinamicamente
+maze = None  
 
-# Configurações da janela para Pygame
+#Configurações da janela para Pygame
 CELL_SIZE = 50
 WINDOW_SIZE = CELL_SIZE * GRID_SIZE
 FPS = 60
 
-# Cores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# Função para gerar labirinto solucionável usando Recursive Backtracking
+#Função para gerar labirinto solucionável usando Recursive Backtracking
 def generate_maze():
     global maze
     def get_neighbors(row, col, maze_temp):
         neighbors = []
-        directions = [(-2, 0), (2, 0), (0, -2), (0, 2)]  # Cima, baixo, esq, dir
+        directions = [(-2, 0), (2, 0), (0, -2), (0, 2)]  #Cima, baixo, esq, dir
         random.shuffle(directions)
         for dr, dc in directions:
             new_row, new_col = row + dr, col + dc
@@ -38,41 +37,64 @@ def generate_maze():
         maze_temp[row][col] = 1
         for new_row, new_col in get_neighbors(row, col, maze_temp):
             if maze_temp[new_row][new_col] == 0:
-                # Abre o caminho entre as células
+                #Abre o caminho entre as células
                 maze_temp[row + (new_row - row) // 2][col + (new_col - col) // 2] = 1
                 carve_path(new_row, new_col, maze_temp)
 
-    # Inicializa a matriz com paredes
-    maze_temp = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-    # Começa a partir de (1,1)
-    carve_path(1, 1, maze_temp)
-    
-    # Define início e objetivo
-    maze_temp[1][1] = 2  # Início
-    maze_temp[GRID_SIZE-2][GRID_SIZE-2] = 3  # Objetivo
-    
-    # Preenche células não visitadas com paredes
-    for i in range(GRID_SIZE):
-        for j in range(GRID_SIZE):
-            if maze_temp[i][j] == 0:
-                maze_temp[i][j] = 0
-    
-    return maze_temp
+    def is_solvable(maze_temp, start, goal):
+        frontier = deque([(start, [start])])
+        visited = set([start])
+        
+        while frontier:
+            state, _ = frontier.popleft()
+            if state == goal:
+                return True
+            for next_state in actions(state, maze_temp):
+                if next_state not in visited:
+                    visited.add(next_state)
+                    frontier.append((next_state, []))
+        return False
 
-# Função de ações possíveis
+    while True:
+        #Inicializa a matriz com paredes
+        maze_temp = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        
+        #Escolhe uma posição inicial aleatória (coordenadas ímpares para alinhar com o algoritmo)
+        start_row = random.randrange(1, GRID_SIZE, 2)
+        start_col = random.randrange(1, GRID_SIZE, 2)
+        start = (start_row, start_col)
+        
+        #Gera o labirinto a partir da posição inicial
+        carve_path(start_row, start_col, maze_temp)
+        
+        #Define o início
+        maze_temp[start_row][start_col] = 2
+        
+        #Escolhe uma posição para o objetivo (célula acessível, diferente do início)
+        accessible_cells = [(i, j) for i in range(GRID_SIZE) for j in range(GRID_SIZE) if maze_temp[i][j] == 1]
+        if not accessible_cells:
+            continue  #Regenera se não houver células acessíveis
+        goal = random.choice(accessible_cells)
+        maze_temp[goal[0]][goal[1]] = 3
+        
+        #Verifica se o labirinto é solucionável
+        if is_solvable(maze_temp, start, goal):
+            return maze_temp
+
+#Função de ações possíveis
 def actions(state, maze_ref=None):
     if maze_ref is None:
         maze_ref = maze
     row, col = state
     possible_actions = []
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # cima, baixo, esq, dir
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  #cima, baixo, esq, dir
     for dr, dc in directions:
         new_row, new_col = row + dr, col + dc
         if 0 <= new_row < len(maze_ref) and 0 <= new_col < len(maze_ref[0]) and maze_ref[new_row][new_col] != 0:
             possible_actions.append((new_row, new_col))
     return possible_actions
 
-# Encontra o estado inicial e objetivo
+#Encontra o estado inicial e objetivo
 def find_start_and_goal(maze_ref):
     start = goal = None
     try:
@@ -89,7 +111,7 @@ def find_start_and_goal(maze_ref):
         print(f"Erro ao encontrar início e objetivo: {e}")
         return None, None
 
-# Teste de objetivo
+#Teste de objetivo
 def is_goal(state):
     try:
         row, col = state
@@ -98,21 +120,21 @@ def is_goal(state):
         print(f"Erro no teste de objetivo: {e}")
         return False
 
-# Custo de passo
+#Custo de passo
 def step_cost(state, action, next_state):
     return 1
 
-# Custo de caminho
+#Custo de caminho
 def path_cost(path):
     return len(path) - 1 if path else 0
 
-# Heurística para A* (distância de Manhattan)
+#Heurística para A* (distância de Manhattan)
 def heuristic(state, goal):
     row, col = state
     goal_row, goal_col = goal
     return abs(row - goal_row) + abs(col - goal_col)
 
-# Busca em Largura (BFS)
+#Busca em Largura (BFS)
 def bfs(start):
     try:
         frontier = deque([(start, [start])])
@@ -134,7 +156,7 @@ def bfs(start):
         print(f"Erro na BFS: {e}")
         return None
 
-# Busca em Profundidade (DFS)
+#Busca em Profundidade (DFS)
 def dfs(start):
     try:
         frontier = [(start, [start])]
@@ -156,10 +178,10 @@ def dfs(start):
         print(f"Erro na DFS: {e}")
         return None
 
-# Busca A*
+#Busca A*
 def a_star(start, goal):
     try:
-        frontier = [(0, start, [start])]  # (f_score, estado, caminho)
+        frontier = [(0, start, [start])]  #(f_score, estado, caminho)
         visited = set()
         g_score = {start: 0}
         
@@ -187,9 +209,11 @@ def a_star(start, goal):
         print(f"Erro na A*: {e}")
         return None
 
-# Função para exibir o labirinto com o caminho (textual)
+#Função para exibir o labirinto com o caminho (textual)
 def print_maze_with_path(maze_ref, path):
     try:
+        if not maze_ref or not all(isinstance(row, list) for row in maze_ref):
+            raise ValueError("Matriz do labirinto inválida.")
         maze_copy = [row[:] for row in maze_ref]
         for row, col in path or []:
             if maze_ref[row][col] not in [2, 3]:
@@ -197,11 +221,11 @@ def print_maze_with_path(maze_ref, path):
         
         print("\nLabirinto:")
         for row in maze_copy:
-          print(' '.join(str(cell).replace('0', '█').replace('1', ' ').replace('2', 'S').replace('3', 'G').replace('*', '*') for cell in row))
+            print(' '.join(str(cell).replace('0', '█').replace('1', ' ').replace('2', 'S').replace('3', 'G').replace('*', '*') for cell in row))
     except Exception as e:
         print(f"Erro ao exibir labirinto: {e}")
 
-# Parte textual: executa BFS, DFS e A*
+#Parte textual: executa BFS, DFS e A*
 def run_textual_solvers():
     start, goal = find_start_and_goal(maze)
     if start is None or goal is None:
@@ -239,24 +263,24 @@ def run_textual_solvers():
     
     return a_star_path
 
-# Inicialização do Pygame
+#Função de configuração do Pygame
 def setup():
     global screen, path, maze
     try:
-        maze = generate_maze()  # Gera um novo labirinto
+        maze = generate_maze() 
         pygame.init()
         screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
         pygame.display.set_caption("Labirinto")
         screen.fill(WHITE)
         
-        # Executa solvers textuais e obtém o caminho do A*
+        #Executa solvers textuais e obtém o caminho do A*
         path = run_textual_solvers() or []
     except Exception as e:
         print(f"Erro na inicialização: {e}")
         if platform.system() != "Emscripten":
             pygame.quit()
 
-# Desenha o labirinto e o caminho
+#Desenha o labirinto e o caminho
 def draw_maze():
     try:
         for i in range(GRID_SIZE):
@@ -270,12 +294,12 @@ def draw_maze():
                     color = RED
                 pygame.draw.rect(screen, color, (j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
-        # Desenha o caminho
+        #Caminho
         for row, col in path:
             if maze[row][col] not in [2, 3]:
                 pygame.draw.rect(screen, BLUE, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
-        # Desenha a grade
+        #Grade
         for i in range(GRID_SIZE + 1):
             pygame.draw.line(screen, BLACK, (0, i * CELL_SIZE), (WINDOW_SIZE, i * CELL_SIZE))
             pygame.draw.line(screen, BLACK, (i * CELL_SIZE, 0), (i * CELL_SIZE, WINDOW_SIZE))
@@ -284,7 +308,6 @@ def draw_maze():
     except Exception as e:
         print(f"Erro ao desenhar o labirinto: {e}")
 
-# Loop de atualização
 def update_loop():
     try:
         for event in pygame.event.get():
