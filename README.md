@@ -23,20 +23,20 @@ Como atividade proposta na disciplina de Sistemas Inteligentes ofertada na Unive
 
   Caminho encontrado: [(1, 1), (2, 1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7), (6, 8), (6, 9), (7, 9), (8, 9)]
 
-  Custo do caminho: 15
+  Custo do caminho: 61
 
 
 - Busca em Profundidade (DFS):
 
   Caminho encontrado: [(1, 1), (2, 1), (2, 2), (2, 3), (2, 4), (1, 4), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9), (1, 9), (2, 9), (2, 8), (3, 8), (4, 8), (4, 9), (5, 9), (6, 9), (6, 8), (6, 7), (6, 6), (6, 5), (6, 4), (6, 3), (6, 2), (5, 2), (4, 2), (4, 1), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0), (8, 1), (8, 2), (8, 3), (8, 4), (8, 5), (8, 6), (8, 7), (9, 7), (9, 8), (9, 9), (8, 9)]
 
-  Custo do caminho: 45
+  Custo do caminho: 49
 
 - Busca A*:
 
   Caminho encontrado: [(1, 1), (2, 1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7), (6, 8), (6, 9), (7, 9), (8, 9)]
 
-  Custo do caminho: 15
+  Custo do caminho: 18
 
 ### Proposição:
 [Referência:](https://www.galirows.com.br/meublog/blog/proposta-de-trabalho-metodos-de-busca-para-resolver-um-labirinto/)
