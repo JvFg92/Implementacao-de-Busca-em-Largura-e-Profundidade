@@ -30,7 +30,12 @@ Este projeto foi desenvolvido como parte da disciplina de **Sistemas Inteligente
 ---
 
 ## 📸 Exemplo de Saída
+
+![image](https://github.com/user-attachments/assets/310235d3-795f-41b9-ad83-8736d5a78aaf)
+![image](https://github.com/user-attachments/assets/05385558-8c51-4a72-9062-95f22e508b47)
 ![image](https://github.com/user-attachments/assets/ba55f54e-951c-4e48-8b14-c8c115478a24)
+
+---
 
 ### Resultados Obtidos:
 
