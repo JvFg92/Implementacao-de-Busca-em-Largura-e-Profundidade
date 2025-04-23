@@ -22,7 +22,6 @@ CELL_SIZE = 50
 WINDOW_SIZE = CELL_SIZE * GRID_SIZE
 FPS = 60
 
-# Cores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
@@ -31,17 +30,16 @@ BLUE = (0, 0, 255)
 ORANGE = (255, 165, 0)
 GRAY = (200, 200, 200)
 
-# Estados do jogo
 screen = None
 path = []
 visited_cells = []
 start = None
 goal = None
 search_generator = None
-current_algorithm = "A*"  # Algoritmo inicial
-steps_counter = 0  # Contador de passos
+current_algorithm = "A*" 
+steps_counter = 0  
 
-# Funções do labirinto
+#Funções base do labirinto
 def get_neighbors(row, col, maze_temp):
     neighbors = []
     directions = [(-2, 0), (2, 0), (0, -2), (0, 2)]
@@ -103,6 +101,7 @@ def heuristic(state, goal):
     goal_row, goal_col = goal
     return abs(row - goal_row) + abs(col - goal_col)
 
+####Funções de Busca####
 
 #Busca em Largura (BFS)
 def bfs_step_by_step(start):
@@ -126,13 +125,10 @@ def bfs_step_by_step(start):
                     visited.add(next_state)
                     frontier.append((next_state, path + [next_state]))
 
-            
-        
         return None
     except Exception as e:
         print(f"Erro na BFS: {e}")
         return None
-
 
 #Busca em Profundidade (DFS)
 def dfs_step_by_step(start):
@@ -157,13 +153,10 @@ def dfs_step_by_step(start):
                     visited.add(next_state)
                     frontier.append((next_state, path + [next_state]))
 
-            
-        
         return None
     except Exception as e:
         print(f"Erro na DFS: {e}")
         return None
-
 
 def a_star_step_by_step(start, goal):
     global steps_counter
@@ -174,7 +167,7 @@ def a_star_step_by_step(start, goal):
     while frontier:
         f_score, state, path = heapq.heappop(frontier)
         yield state, path, visited
-        steps_counter += 1  # Incrementa o contador de passos
+        steps_counter += 1 
         if is_goal(state):
             print("\n\n", path)
             return
@@ -187,10 +180,9 @@ def a_star_step_by_step(start, goal):
                 g_score[next_state] = new_g
                 f = new_g + heuristic(next_state, goal)
                 heapq.heappush(frontier, (f, next_state, path + [next_state]))
-
         
+###Labirinto e Interface Gráfica###
 
-# Pygame e desenho
 def setup():
     global screen, path, visited_cells, start, goal, search_generator, steps_counter
     pygame.init()
@@ -198,26 +190,21 @@ def setup():
     pygame.display.set_caption("Busca em Labirinto")
     generate_new_maze()
 
-first_maze_generated = False  # <- Adicione essa variável global no início do código
+first_maze_generated = False  
 
 def generate_new_maze():
     global maze, start, goal, path, visited_cells, search_generator, steps_counter, first_maze_generated
 
     if not first_maze_generated:
-        # Usa o labirinto inicial fixo na primeira vez
         first_maze_generated = True
         start, goal = find_start_and_goal(maze)
     else:
         while True:
-            # Começa com todas as células como paredes (0)
             maze_temp = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-
-            # Escolhe uma posição inicial ímpar para garantir conectividade
             start_row = random.randrange(1, GRID_SIZE, 2)
             start_col = random.randrange(1, GRID_SIZE, 2)
             carve_path(start_row, start_col, maze_temp)
 
-            # Define início e fim em posições vazias diferentes
             empty_cells = [(i, j) for i in range(GRID_SIZE) for j in range(GRID_SIZE) if maze_temp[i][j] == 1]
             if len(empty_cells) < 2:
                 continue
@@ -226,7 +213,6 @@ def generate_new_maze():
             maze_temp[start[0]][start[1]] = 2
             maze_temp[goal[0]][goal[1]] = 3
 
-            # Verifica se o labirinto é solucionável
             if is_solvable(maze_temp, start, goal):
                 maze = maze_temp
                 break
@@ -235,9 +221,6 @@ def generate_new_maze():
     visited_cells = []
     steps_counter = 0
     search_generator = get_algorithm_generator(current_algorithm)
-
-
-
 
 def get_algorithm_generator(algo):
     if algo == "BFS":
@@ -274,25 +257,20 @@ def draw_maze():
         if maze[row][col] not in [2, 3]:
             pygame.draw.rect(screen, BLUE, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
-    # Grade
     for i in range(GRID_SIZE + 1):
         pygame.draw.line(screen, BLACK, (0, i * CELL_SIZE), (WINDOW_SIZE, i * CELL_SIZE))
         pygame.draw.line(screen, BLACK, (i * CELL_SIZE, 0), (i * CELL_SIZE, WINDOW_SIZE))
 
-    # Botões
     draw_button("Novo Labirinto", 10, WINDOW_SIZE + 10, 140, 40)
     draw_button("BFS", 160, WINDOW_SIZE + 10, 60, 40, current_algorithm == "BFS")
     draw_button("DFS", 230, WINDOW_SIZE + 10, 60, 40, current_algorithm == "DFS")
     draw_button("A*", 300, WINDOW_SIZE + 10, 60, 40, current_algorithm == "A*")
 
-    # Exibe o contador de passos
     font = pygame.font.SysFont(None, 24)
     steps_text = font.render(f"Passos: {steps_counter}", True, BLACK)
     screen.blit(steps_text, (WINDOW_SIZE - 100, WINDOW_SIZE + 15))
 
     pygame.display.flip()
-
-
 
 def update_loop():
     global path, visited_cells, search_generator, current_algorithm
@@ -310,19 +288,19 @@ def update_loop():
                     search_generator = get_algorithm_generator(current_algorithm)
                     path = []
                     visited_cells = []
-                    steps_counter = 0  # Reinicia o contador de passos
+                    steps_counter = 0  
                 elif 230 <= x <= 290:
                     current_algorithm = "DFS"
                     search_generator = get_algorithm_generator(current_algorithm)
                     path = []
                     visited_cells = []
-                    steps_counter = 0  # Reinicia o contador de passos
+                    steps_counter = 0  
                 elif 300 <= x <= 360:
                     current_algorithm = "A*"
                     search_generator = get_algorithm_generator(current_algorithm)
                     path = []
                     visited_cells = []
-                    steps_counter = 0  # Reinicia o contador de passos
+                    steps_counter = 0  
 
     try:
         state, path_so_far, visited = next(search_generator)
@@ -334,7 +312,6 @@ def update_loop():
     draw_maze()
     return True
 
-# Loop principal
 async def main():
     setup()
     while update_loop():
