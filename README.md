@@ -24,7 +24,10 @@ This project provides a visual demonstration of popular pathfinding algorithms n
 ## 📸 Demo 
 
 **Example placeholder:**
-![Solve Demo](https://github.com/user-attachments/assets/3babf8c5-4717-470d-9a31-3a7d1264ea06)
+
+![Screencast-2025-07-07-14_58_06](https://github.com/user-attachments/assets/c2fd7a62-a34b-4ade-a2b2-810b0bcde5b0)
+
+
 
 
 ## 🛠️ Technologies Used
